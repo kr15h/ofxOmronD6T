@@ -54,6 +54,7 @@ static int i2c_set_slave_address(int fh, uint8_t address);
  */
 int i2c_start_transaction(uint8_t slave_address, const char* i2c_bus)
 {
+#ifdef TARGET_RASPBERRY_PI
 	int fh, result;
     
 	fh = i2c_open_device(i2c_bus);
@@ -69,6 +70,9 @@ int i2c_start_transaction(uint8_t slave_address, const char* i2c_bus)
 	}
     
 	return fh;
+#else 
+    return 1;
+#endif
 }
 
 /*
@@ -76,14 +80,17 @@ int i2c_start_transaction(uint8_t slave_address, const char* i2c_bus)
  */
 int i2c_end_transaction(int fh)
 {
+#ifdef TARGET_RASPBERRY_PI
 	if (fh > 0)
 		close(fh);
+#endif
     
 	return 1;
 }
 
 int i2c_open_device(const char* i2c_bus)
 {
+#ifdef TARGET_RASPBERRY_PI
 	int fh = -1;
     
 	fh = open(i2c_bus, O_RDWR);
@@ -94,10 +101,14 @@ int i2c_open_device(const char* i2c_bus)
 	}
     
 	return fh;
+#else 
+    return 1;
+#endif
 }
 
 int i2c_set_slave_address(int fh, uint8_t address)
 {
+#ifdef TARGET_RASPBERRY_PI
 	if (fh < 0)
 		return -1;
     
@@ -111,7 +122,8 @@ int i2c_set_slave_address(int fh, uint8_t address)
         
 		return -1;
 	}
-    
+#endif
+
 	return 1;
 }
 

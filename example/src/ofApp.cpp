@@ -2,7 +2,7 @@
 
 void ofApp::setup()
 {
-    printf("Omron D6T-44L-06 test application.\n");
+    cout << "Omron D6T-44L-06 test application." << endl;
 	ofSetFrameRate(10);
 	
 	sensorPtr = 0;

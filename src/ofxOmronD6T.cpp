@@ -29,8 +29,9 @@ ofxOmronD6T::~ofxOmronD6T()
 
 int16_t* ofxOmronD6T::measure()
 {
-    uint8_t cmd[1] = {0x4c};
     uint8_t i = 0;
+#ifdef TARGET_RASPBERRY_PI
+    uint8_t cmd[1] = {0x4c};
     uint8_t valid = 0;
     uint8_t read_few = 0;
     
@@ -71,12 +72,18 @@ int16_t* ofxOmronD6T::measure()
 	}
     
 	i2c_end_transaction(fh);
+#else
+    for (i = 0; i < 17; i++) {
+        measurement[i] = (uint16_t)(i*5);
+    }
+#endif
     
 	return measurement;
 }
 
 uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readBytes, uint8_t* pRead)
 {
+#ifdef TARGET_RASPBERRY_PI
     int result;
     
     if(writeBytes > 0) {
@@ -95,12 +102,14 @@ uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readB
 			return 1;
 		}
     }
+#endif
     
     return 0;
 }
 
 uint8_t ofxOmronD6T::calc_crc(uint8_t data)
 {
+#ifdef TARGET_RASPBERRY_PI
 	uint8_t i;
 	uint8_t temp;
     
@@ -109,11 +118,13 @@ uint8_t ofxOmronD6T::calc_crc(uint8_t data)
         data <<= 1;
         if(temp & 0x80) data ^= 0x07;
 	}
+#endif
 	return data;
 }
 
 uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 {
+#ifdef TARGET_RASPBERRY_PI
 	uint8_t crc;
 	uint8_t i;
     
@@ -125,6 +136,9 @@ uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 		crc = calc_crc( buffer[i] ^ crc );
 	}
 	return (crc == buffer[length]);
+#else
+    return true;
+#endif
 }
 
 void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
@@ -132,7 +146,7 @@ void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
     busName = i2c_bus;
     address = addr;
     d6tModel = model;
-    
+#ifdef TARGET_RASPBERRY_PI
     uint8_t reg[1] = {0x4c};
     uint8_t valid = 0;
     
@@ -150,5 +164,8 @@ void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
 	}
     
     i2c_end_transaction(fh);
+#else
+    std::cout << "ofxOmronD6T running in simulator mode." << std::endl;
+#endif
 }
 
