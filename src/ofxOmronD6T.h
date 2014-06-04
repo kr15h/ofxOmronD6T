@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdint.h>
 
 #define DEF_I2C_BUS "/dev/i2c-1"
 #define DEF_I2C_ADDRESS 0x0A
