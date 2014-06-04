@@ -37,7 +37,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
     #include <linux/i2c-dev.h>
 #endif
 
@@ -77,7 +77,7 @@ int i2c_start_transaction(uint8_t slave_address, const char* i2c_bus)
  */
 int i2c_end_transaction(int fh)
 {
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
 	if (fh > 0) 
 		close(fh);
 #endif
@@ -88,7 +88,7 @@ int i2c_end_transaction(int fh)
 int i2c_open_device(const char* i2c_bus)
 {
 	int fh = -1;
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
 	fh = open(i2c_bus, O_RDWR);
 
 	if (fh < 0) {
@@ -106,7 +106,7 @@ int i2c_set_slave_address(int fh, uint8_t address)
 	if (fh < 0) 
 		return -1;
 
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
 	if (ioctl(fh, I2C_SLAVE, address) < 0) {
 		if (errno == EBUSY) 
 			fprintf(stderr, "Device %d is busy!\n", address);

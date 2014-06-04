@@ -24,7 +24,7 @@ ofxOmronD6T::~ofxOmronD6T()
 int16_t* ofxOmronD6T::measure()
 {
     uint8_t i = 0;
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
     uint8_t cmd[1] = {0x4c};
     uint8_t valid = 0;
     uint8_t read_few = 0;
@@ -82,7 +82,7 @@ void ofxOmronD6T::init(uint8_t m, std::string bus, uint8_t address)
     i2cBus = bus;
     i2cAddress = address;
 
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
     uint8_t reg[1] = {0x4c};
     uint8_t valid = 0;
     
@@ -107,7 +107,7 @@ void ofxOmronD6T::init(uint8_t m, std::string bus, uint8_t address)
 
 uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readBytes, uint8_t* pRead)
 {
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
     int result;
     
     if (writeBytes > 0) {
@@ -131,7 +131,7 @@ uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readB
 // PEC stands for Packet Error Checking
 uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 {
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
 	uint8_t crc;
 	uint8_t i;
     
@@ -151,7 +151,7 @@ uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 
 uint8_t ofxOmronD6T::calc_crc(uint8_t data)
 {
-#ifdef TARGET_LINUX
+#ifdef TARGET_RASPBERRY_PI
 	uint8_t i;
 	uint8_t temp;
     
