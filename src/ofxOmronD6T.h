@@ -46,7 +46,7 @@ private:
     
     std::string busName;
     uint8_t address;
-    int model;
+    int d6tModel;
     
     uint8_t readings[35];
     

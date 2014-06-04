@@ -41,10 +41,10 @@ int16_t* ofxOmronD6T::measure()
     while (!valid) {
 		try
 		{
-			if (model == D6T_8L_06){
+			if (d6tModel == D6T_8L_06){
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 19, readings);
 				valid = 1;//checkPEC(readings, 18);
-			} else if (model == D6T_44L_06) {
+			} else if (d6tModel == D6T_44L_06) {
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 35, readings);
 				valid = 1;//checkPEC(readings, 34);
 			}
@@ -56,7 +56,7 @@ int16_t* ofxOmronD6T::measure()
 		}
     }
     
-	if (model == D6T_8L_06){
+	if (d6tModel == D6T_8L_06){
 		for (i = 0; i < 9; i++) {
 			if (read_few) {
 				measurement[i] = -1;
@@ -65,7 +65,7 @@ int16_t* ofxOmronD6T::measure()
 			}
 		}
 		measurement[9] = (int16_t) readings[18];
-	} else if (model == D6T_44L_06) {
+	} else if (d6tModel == D6T_44L_06) {
 		for (i = 0; i < 17; i++) {
 			if (read_few) {
 				measurement[i] = -1;
@@ -139,13 +139,13 @@ uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 	return (crc == buffer[length]);
 }
 
-void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int m)
+void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
 {
     //if(addr != 0x14)
 	//throw D6TException("Invalid device address");
     busName = i2c_bus;
     address = addr;
-    model = m;
+    d6tModel = model;
     
     uint8_t reg[1] = {0x4c};
     uint8_t valid = 0;
@@ -154,10 +154,10 @@ void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int m)
 	if(fh < 0)
         throw D6TException("Could not open i2c device.");
     
-	if (model == D6T_8L_06) {
+	if (d6tModel == D6T_8L_06) {
 		transfer((uint8_t) 1, reg, (uint8_t) 19, readings);
 		valid = checkPEC(readings, 18);
-	} else if (model == D6T_44L_06) {
+	} else if (d6tModel == D6T_44L_06) {
 		transfer((uint8_t) 1, reg, (uint8_t) 35, readings);
 		valid = checkPEC(readings, 34);
 	}
