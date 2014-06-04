@@ -15,7 +15,7 @@ public:
 	ofxOmronD6T* sensorPtr;
 	int address;
 	string i2c_bus;
-	uint8_t iType;
+	int model;
     
 	ofColor colors[16];
 	float temp_cel[16];

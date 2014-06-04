@@ -14,41 +14,19 @@ D6TException::D6TException(std::string msg_)
     //ROS_ERROR("Exception: %s\nERRNO: %d %s", msg.c_str(), errno, strerror(errno));
 }
 
-ofxOmronD6T::ofxOmronD6T(std::string i2c_bus, uint8_t addr, uint8_t inType)
+ofxOmronD6T::ofxOmronD6T()
 {
-    //if(addr != 0x14)
-	//throw D6TException("Invalid device address");
-    busName = i2c_bus;
-    address = addr;
-    type = inType;
-    
-    uint8_t reg[1] = {0x4c};
-    uint8_t valid = 0;
-    
-    fh = i2c_start_transaction(addr, i2c_bus.c_str());
-	if(fh < 0)
-        throw D6TException("Could not open i2c device.");
-    
-	//ROS_INFO("FileHandle is %d", fh);
-    
-	if (type == 0) {
-		transfer((uint8_t) 1, reg, (uint8_t) 19, readings);
-		valid = checkPEC(readings, 18);
-	} else if (type == 1) {
-		transfer((uint8_t) 1, reg, (uint8_t) 35, readings);
-		valid = checkPEC(readings, 34);
-	}
-    
-	if (valid) {
-		//ROS_INFO("Found D6T at address 0x%X", address);
-	} else {
-		//ROS_INFO("Got no Valid Checksum at address 0x%X", address);
-		//int i = 0;
-		//for (i = 0; i < 19; i++) {
-		//	ROS_INFO("0x%X", readings[i]);
-		//}
-	}
-    i2c_end_transaction(fh);
+    init(DEF_D6T_BUS, DEF_D6T_ADDRESS, D6T_44L_06);
+}
+
+ofxOmronD6T::ofxOmronD6T(uint8_t model)
+{
+    init(DEF_D6T_BUS, DEF_D6T_ADDRESS, model);
+}
+
+ofxOmronD6T::ofxOmronD6T(std::string i2cBus, uint8_t i2cAddress, uint8_t model)
+{
+    init(i2cBus, i2cAddress, model);
 }
 
 ofxOmronD6T::~ofxOmronD6T()
@@ -68,10 +46,10 @@ int16_t* ofxOmronD6T::measure()
     while (!valid) {
 		try
 		{
-			if (type == 0){
+			if (model == D6T_8L_06){
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 19, readings);
 				valid = 1;//checkPEC(readings, 18);
-			} else if (type == 1) {
+			} else if (model == D6T_44L_06) {
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 35, readings);
 				valid = 1;//checkPEC(readings, 34);
 			}
@@ -83,7 +61,7 @@ int16_t* ofxOmronD6T::measure()
 		}
     }
     
-	if (type == 0){
+	if (model == D6T_8L_06){
 		for (i = 0; i < 9; i++) {
 			if (read_few) {
 				measurement[i] = -1;
@@ -92,7 +70,7 @@ int16_t* ofxOmronD6T::measure()
 			}
 		}
 		measurement[9] = (int16_t) readings[18];
-	} else if (type == 1) {
+	} else if (model == D6T_44L_06) {
 		for (i = 0; i < 17; i++) {
 			if (read_few) {
 				measurement[i] = -1;
@@ -165,3 +143,30 @@ uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 	}
 	return (crc == buffer[length]);
 }
+
+void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int m)
+{
+    //if(addr != 0x14)
+	//throw D6TException("Invalid device address");
+    busName = i2c_bus;
+    address = addr;
+    model = m;
+    
+    uint8_t reg[1] = {0x4c};
+    uint8_t valid = 0;
+    
+    fh = i2c_start_transaction(addr, i2c_bus.c_str());
+	if(fh < 0)
+        throw D6TException("Could not open i2c device.");
+    
+	if (model == D6T_8L_06) {
+		transfer((uint8_t) 1, reg, (uint8_t) 19, readings);
+		valid = checkPEC(readings, 18);
+	} else if (model == D6T_44L_06) {
+		transfer((uint8_t) 1, reg, (uint8_t) 35, readings);
+		valid = checkPEC(readings, 34);
+	}
+    
+    i2c_end_transaction(fh);
+}
+
