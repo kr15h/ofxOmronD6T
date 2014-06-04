@@ -6,11 +6,11 @@ void ofApp::setup()
 	ofSetFrameRate(10);
 	
 	sensorPtr = 0;
-	address = 0x0A;
-	i2c_bus = "/dev/i2c-1";
-	model = ofxOmronD6T::D6T_44L_06; // D6T-44L-06
-	
-	sensorPtr = new ofxOmronD6T();
+    try {
+        sensorPtr = new ofxOmronD6T();
+    } catch ( ofxOmronD6TException& e ) {
+        cout << e.what() << endl;
+    }
 	
 	bShowTemps = true;
 	bShowInstr = true;

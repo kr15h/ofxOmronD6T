@@ -11,11 +11,11 @@
 #include <errno.h>
 #include <sstream>
 
-class D6TException : std::exception
+class ofxOmronD6TException : std::exception
 {
 public:
-	D6TException(std::string msg_);
-    virtual ~D6TException() throw() {}
+	ofxOmronD6TException(std::string msg_);
+    virtual ~ofxOmronD6TException() throw() {}
     
     const char* what() const throw() { return msg.c_str(); }
     

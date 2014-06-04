@@ -7,13 +7,6 @@ std::string to_string(int num) {
     return ss.str();
 }
 
-D6TException::D6TException(std::string msg_)
-{
-    msg = msg_;
-    
-    //ROS_ERROR("Exception: %s\nERRNO: %d %s", msg.c_str(), errno, strerror(errno));
-}
-
 ofxOmronD6T::ofxOmronD6T()
 {
     init(DEF_D6T_BUS, DEF_D6T_ADDRESS, D6T_44L_06);
@@ -39,8 +32,7 @@ int16_t* ofxOmronD6T::measure()
     fh = i2c_start_transaction(address, busName.c_str());
     
     while (!valid) {
-		try
-		{
+		try {
 			if (d6tModel == D6T_8L_06){
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 19, readings);
 				valid = 1;//checkPEC(readings, 18);
@@ -48,11 +40,8 @@ int16_t* ofxOmronD6T::measure()
 				read_few = transfer((uint8_t) 1, cmd, (uint8_t) 35, readings);
 				valid = 1;//checkPEC(readings, 34);
 			}
-            
-		}
-		catch(D6TException&)
-		{
-			//ROS_INFO("D6T conversion running");
+		} catch(ofxOmronD6TException& e) {
+            std::cout << e.what() << std::endl;
 		}
     }
     
@@ -85,29 +74,23 @@ uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readB
 {
     int result;
     
-    if(writeBytes > 0)
-    {
+    if(writeBytes > 0) {
 		result = write(fh, pWrite, writeBytes);
-		if(result != writeBytes)
-		{
-			//i2c_end_transaction(fh);
-			//ROS_INFO("fh %d result %d errno %d writeBytes %d", fh, result, errno, writeBytes);
-			throw D6TException("Could not write data");
+		if(result != writeBytes) {
+			throw ofxOmronD6TException("Could not write data");
 		}
     }
     
-    if(readBytes > 0)
-    {
+    if(readBytes > 0) {
 		result = read(fh, pRead, readBytes);
-		if(result != readBytes)
-		{
-			//i2c_end_transaction(fh);
+		if(result != readBytes) {
 			std::string text = "Could not read enough data: " + to_string(result) + "/" + to_string(readBytes);
-			throw D6TException(text);
+			throw ofxOmronD6TException(text);
             
 			return 1;
 		}
     }
+    
     return 0;
 }
 
@@ -141,8 +124,6 @@ uint8_t ofxOmronD6T::checkPEC(uint8_t* buffer, uint8_t length)
 
 void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
 {
-    //if(addr != 0x14)
-	//throw D6TException("Invalid device address");
     busName = i2c_bus;
     address = addr;
     d6tModel = model;
@@ -151,8 +132,9 @@ void ofxOmronD6T::init(std::string i2c_bus, uint8_t addr, int model)
     uint8_t valid = 0;
     
     fh = i2c_start_transaction(addr, i2c_bus.c_str());
-	if(fh < 0)
-        throw D6TException("Could not open i2c device.");
+	if(fh < 0) {
+        throw ofxOmronD6TException("Could not open I2C device.");
+    }
     
 	if (d6tModel == D6T_8L_06) {
 		transfer((uint8_t) 1, reg, (uint8_t) 19, readings);
