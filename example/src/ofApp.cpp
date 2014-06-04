@@ -3,7 +3,7 @@
 void ofApp::setup()
 {
     cout << "Omron D6T-44L-06 test application." << endl;
-	ofSetFrameRate(10);
+	ofSetFrameRate(60);
 	
 	sensorPtr = 0;
     try {
@@ -12,7 +12,7 @@ void ofApp::setup()
         cout << e.what() << endl;
     }
 	
-	bShowTemps = true;
+	bShowTemps = false;
 	bShowInstr = true;
 }
 
@@ -64,6 +64,11 @@ void ofApp::draw()
 		is << "Press i to toggle this info.";
 		ofDrawBitmapStringHighlight( is.str(),ofPoint(10,ofGetHeight()-40) );
 	}
+	
+	// Monitor framerate
+	stringstream fs;
+	fs << "FPS: " << ofGetFrameRate();
+	ofDrawBitmapStringHighlight( fs.str(), ofPoint(10,20) );
 }
 
 void ofApp::keyPressed(int key)
