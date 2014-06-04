@@ -2,10 +2,15 @@
 
 void ofApp::setup()
 {
+    printf("Omron D6T-44L-06 test application.\n");
 	ofSetFrameRate(10);
 	
 	sensorPtr = 0;
-	sensorPtr = new ofxOmronD6T();
+	address = 0x0a;
+	i2c_bus = "/dev/i2c-1";
+	iType = 1; // D6T-44L-06
+	
+	sensorPtr = new ofxOmronD6T(i2c_bus, address, iType);
 	
 	bShowTemps = true;
 	bShowInstr = true;
@@ -13,12 +18,13 @@ void ofApp::setup()
 
 void ofApp::update()
 {
-	int16_t* measurements = 0;
+	int16_t *measurements = 0;
     measurements = sensorPtr->measure();
 	for ( int i=0; i<16; i++ ) {
-        // Store float temperature in an array.
+		//cout << measurements[i] << ", ";
+		// Store float temperature in an array.
 		temp_cel[i] = (float)measurements[i+1]*0.1f;
-		// Map values to int range assuming that 
+		// Map values to int range assuming that
 		// the maximum temperature is 50.0f deg celsius.
 		//int rgb_map = (int)(temp_cel[i]/50.0f*255.0f);
 		// mapping the range from 10 to 40 deg cels
@@ -26,6 +32,7 @@ void ofApp::update()
 		// Set color for visual output
 		colors[i] = ofColor(rgb_map,0,0);
 	}
+	//cout << endl;
 }
 
 void ofApp::draw()
@@ -69,6 +76,6 @@ void ofApp::keyPressed(int key)
 		bShowTemps = !bShowTemps;
 	} else if ( key == 'i' ) {
 		// Toggle info
-		bShowInstr = !bShowInstr;	
+		bShowInstr = !bShowInstr;
 	}
 }

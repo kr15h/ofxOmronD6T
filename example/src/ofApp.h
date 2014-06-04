@@ -16,7 +16,7 @@ public:
 	int address;
 	string i2c_bus;
 	uint8_t iType;
-
+    
 	ofColor colors[16];
 	float temp_cel[16];
 	
