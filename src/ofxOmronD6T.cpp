@@ -19,11 +19,6 @@ ofxOmronD6T::ofxOmronD6T()
     init(DEF_D6T_BUS, DEF_D6T_ADDRESS, D6T_44L_06);
 }
 
-ofxOmronD6T::ofxOmronD6T(uint8_t model)
-{
-    init(DEF_D6T_BUS, DEF_D6T_ADDRESS, model);
-}
-
 ofxOmronD6T::ofxOmronD6T(std::string i2cBus, uint8_t i2cAddress, uint8_t model)
 {
     init(i2cBus, i2cAddress, model);

@@ -27,7 +27,6 @@ class ofxOmronD6T
 {
 public:
     ofxOmronD6T();
-    ofxOmronD6T(uint8_t model);
 	ofxOmronD6T(std::string i2cBus, uint8_t i2cAddress, uint8_t model);
     ~ofxOmronD6T();
     
