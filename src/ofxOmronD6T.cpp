@@ -7,6 +7,11 @@ std::string to_string(int num) {
     return ss.str();
 }
 
+ofxOmronD6TException::ofxOmronD6TException(std::string msg_)
+{
+    msg = msg_;
+}
+
 ofxOmronD6T::ofxOmronD6T()
 {
     init(DEF_D6T_BUS, DEF_D6T_ADDRESS, D6T_44L_06);

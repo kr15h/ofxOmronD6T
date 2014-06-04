@@ -39,6 +39,8 @@
 
 #ifdef TARGET_RASPBERRY_PI
 #include <linux/i2c-dev.h>
+#else 
+#define I2C_SLAVE 0
 #endif
 
 
