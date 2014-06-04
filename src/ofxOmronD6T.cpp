@@ -81,22 +81,22 @@ int16_t* ofxOmronD6T::measure()
 	return measurement;
 }
 
-uint8_t ofxOmronD6T::transfer(uint8_t writeBytes, uint8_t* pWrite, uint8_t readBytes, uint8_t* pRead)
+uint8_t ofxOmronD6T::transfer(uint8_t numWriteBytes, uint8_t* pWrite, uint8_t numReadBytes, uint8_t* pRead)
 {
 #ifdef TARGET_RASPBERRY_PI
     int result;
     
-    if(writeBytes > 0) {
-		result = write(fh, pWrite, writeBytes);
-		if(result != writeBytes) {
+    if(numWriteBytes > 0) {
+		result = write(fh, pWrite, numWriteBytes);
+		if(result != numWriteBytes) {
 			throw ofxOmronD6TException("Could not write data");
 		}
     }
     
-    if(readBytes > 0) {
-		result = read(fh, pRead, readBytes);
-		if(result != readBytes) {
-			std::string text = "Could not read enough data: " + to_string(result) + "/" + to_string(readBytes);
+    if(numReadBytes > 0) {
+		result = read(fh, pRead, numReadBytes);
+		if(result != numReadBytes) {
+			std::string text = "Could not read enough data: " + to_string(result) + "/" + to_string(numReadBytes);
 			throw ofxOmronD6TException(text);
             
 			return 1;
